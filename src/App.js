@@ -1,24 +1,62 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import Form from "./components/Form.jsx";
+import retrieveLocalStorage from "./helpers/retrieveLocalStorage.js";
+import setLocalStorage from "./helpers/setLocalStorage.js";
+
+import "./App.css";
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [userName, setUserName] = useState(null);
+  const [password, setPassword] = useState(null);
+  const handleSetUserName = (e) => {
+    const userName = e.target.value;
+    setUserName(userName);
+  };
+
+  const handleSetPassword = (e) => {
+    const password = e.target.value;
+    setPassword(password);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const user = {
+      userName,
+      password,
+    };
+
+    setUser(user);
+    alert(JSON.stringify(user));
+  };
+
+  useEffect(() => {
+    return () => {
+      if (userName || password) {
+        setLocalStorage("loginID", [userName, password]);
+      }
+    };
+  });
+
+  useEffect(() => {
+    const info = retrieveLocalStorage("loginID");
+    setUserName(info ? info[0] : null);
+    setPassword(info ? info[1] : null);
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <h1>Login Page</h1>
+      <div className="form-container">
+        <Form
+          handleSetUserName={handleSetUserName}
+          handleSetPassword={handleSetPassword}
+          handleSubmit={handleSubmit}
+          userName={userName}
+          password={password}
+        />
+      </div>
+    </>
   );
 }
 
